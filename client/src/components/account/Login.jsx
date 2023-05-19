@@ -45,12 +45,29 @@ const SignupButton = styled(Button)`
   box-shadow: 0 2px 4px 0 rgb(0 0 0 / 20%);
 `;
 
+const Text = styled(Typography)`
+  color: #878787;
+  font-size: 16px;
+`;
+
+const signupInitialValue = {
+  name: '',
+  username: '',
+  password: '',
+};
+
 const Login = () => {
   const [account, toggleAccount] = useState('login');
+  const [signup, setSignup] = useState(signupInitialValue);
   const imageURL = 'https://fontmeme.com/images/Blogger-Logo.jpg';
 
   const toggleSignup = () => {
     account === 'signup' ? toggleAccount('login') : toggleAccount('signup');
+  };
+
+  const onInputChange = (e) => {
+    // console.log(e.target.name, e.target.value);
+    setSignup({ ...signup, [e.target.name]: e.target.value });
   };
 
   return (
@@ -62,18 +79,33 @@ const Login = () => {
             <TextField variant='standard' label='Enter Username' />
             <TextField variant='standard' label='Enter Password' />
             <LoginButton variant='contained'>Login</LoginButton>
-            <Typography style={{ textAlign: 'center' }}>OR</Typography>
+            <Text style={{ textAlign: 'center' }}>OR</Text>
             <SignupButton onClick={() => toggleSignup()}>
               Create an account
             </SignupButton>
           </Wrapper>
         ) : (
           <Wrapper>
-            <TextField variant='standard' label='Enter Name' />
-            <TextField variant='standard' label='Enter Username' />
-            <TextField variant='standard' label='Enter Password' />
+            <TextField
+              variant='standard'
+              onChange={(e) => onInputChange(e)}
+              name='name'
+              label='Enter Name'
+            />
+            <TextField
+              variant='standard'
+              onChange={(e) => onInputChange(e)}
+              name='username'
+              label='Enter Username'
+            />
+            <TextField
+              variant='standard'
+              name='password'
+              onChange={(e) => onInputChange(e)}
+              label='Enter Password'
+            />
             <SignupButton variant='contained'>Signup</SignupButton>
-            <Typography style={{ textAlign: 'center' }}>OR</Typography>
+            <Text style={{ textAlign: 'center' }}>OR</Text>
             <LoginButton variant='contained' onClick={() => toggleSignup()}>
               Already have an account
             </LoginButton>
