@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Box, TextField, Button, styled, Typography } from '@mui/material';
 import { API } from '../../service/api';
+import { DataContext } from '../../context/DataProvider';
+import { useNavigate } from 'react-router-dom';
 
 const Component = styled(Box)`
   width: 400px;
@@ -65,18 +67,30 @@ const signupInitialValue = {
   password: '',
 };
 
-const Login = () => {
+const loginInitialValue = {
+  username: '',
+  password: '',
+};
+
+const Login = ({ isUserAuthenticated }) => {
   const [account, toggleAccount] = useState('login');
   const [signup, setSignup] = useState(signupInitialValue);
+  const [login, setLogin] = useState(loginInitialValue);
   const [error, setError] = useState('');
   const imageURL = 'https://fontmeme.com/images/Blogger-Logo.jpg';
+
+  const { setAccount } = useContext(DataContext);
+  const navigate = useNavigate();
 
   const toggleSignup = () => {
     account === 'signup' ? toggleAccount('login') : toggleAccount('signup');
   };
 
+  const onValueChange = (e) => {
+    setLogin({ ...login, [e.target.name]: e.target.value });
+  };
+
   const onInputChange = (e) => {
-    // console.log(e.target.name, e.target.value);
     setSignup({ ...signup, [e.target.name]: e.target.value });
   };
 
@@ -91,17 +105,57 @@ const Login = () => {
     }
   };
 
+  const loginUser = async () => {
+    let response = await API.userLogin(login);
+    if (response.isSuccess) {
+      setError('');
+
+      sessionStorage.setItem(
+        'accessToken',
+        `Bearer ${response.data.accessToken}`
+      );
+      sessionStorage.setItem(
+        'refreshToken',
+        `Bearer ${response.data.refreshToken}`
+      );
+      setAccount({
+        name: response.data.name,
+        username: response.data.username,
+      });
+
+      isUserAuthenticated(true);
+      setLogin(loginInitialValue);
+      navigate('/');
+    } else {
+      setError('Something went wrong! please try again later');
+    }
+  };
+
   return (
     <Component>
       <Box>
         <Image src={imageURL} alt='login' />
         {account === 'login' ? (
           <Wrapper>
-            <TextField variant='standard' label='Enter Username' />
-            <TextField variant='standard' label='Enter Password' />
+            <TextField
+              variant='standard'
+              value={login.username}
+              onChange={(e) => onValueChange(e)}
+              name='username'
+              label='Enter Username'
+            />
+            <TextField
+              variant='standard'
+              value={login.password}
+              onChange={(e) => onValueChange(e)}
+              name='password'
+              label='Enter Password'
+            />
             {error && <Error>{error}</Error>}
 
-            <LoginButton variant='contained'>Login</LoginButton>
+            <LoginButton variant='contained' onClick={() => loginUser()}>
+              Login
+            </LoginButton>
             <Text style={{ textAlign: 'center' }}>OR</Text>
             <SignupButton onClick={() => toggleSignup()}>
               Create an account
@@ -112,17 +166,20 @@ const Login = () => {
             <TextField
               variant='standard'
               onChange={(e) => onInputChange(e)}
+              value={signup.name}
               name='name'
               label='Enter Name'
             />
             <TextField
               variant='standard'
               onChange={(e) => onInputChange(e)}
+              value={signup.username}
               name='username'
               label='Enter Username'
             />
             <TextField
               variant='standard'
+              value={signup.password}
               name='password'
               onChange={(e) => onInputChange(e)}
               label='Enter Password'
