@@ -14,11 +14,19 @@ app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', Router);
 
-const PORT = 8000;
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static('client/build'));
+}
+
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`));
 
-const username = process.env.DB_USERNAME;
-const password = process.env.DB_PASSWORD;
+const USERNAME = process.env.DB_USERNAME;
+const PASSWORD = process.env.DB_PASSWORD;
 
-Connection(username, password);
+const URL =
+  process.env.MONGODB_URI ||
+  `mongodb+srv://${USERNAME}:${PASSWORD}@blog-app.6g9ds58.mongodb.net/?retryWrites=true&w=majority`;
+
+Connection(URL);
