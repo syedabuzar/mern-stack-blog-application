@@ -12,9 +12,9 @@ import {
 } from 'react-router-dom';
 import CreatePost from './components/create/CreatePost';
 import DetailView from './components/details/DetailView';
-// import Update from './components/create/Update';
-// import About from './components/about/About';
-// import Contact from './components/contact/Contact';
+import Update from './components/create/Update';
+import About from './components/about/About';
+import Contact from './components/contact/Contact';
 
 const PrivateRoute = ({ userAuthenticated, ...props }) => {
   // const token = sessionStorage.getItem('accessToken');
@@ -58,6 +58,27 @@ function App() {
               element={<PrivateRoute userAuthenticated={userAuthenticated} />}
             >
               <Route path='/details/:id' element={<DetailView />} />
+            </Route>
+
+            <Route
+              path='/update/:id'
+              element={<PrivateRoute userAuthenticated={userAuthenticated} />}
+            >
+              <Route path='/update/:id' element={<Update />} />
+            </Route>
+
+            <Route
+              path='/about'
+              element={<PrivateRoute userAuthenticated={userAuthenticated} />}
+            >
+              <Route path='/about' element={<About />} />
+            </Route>
+
+            <Route
+              path='/contact'
+              element={<PrivateRoute userAuthenticated={userAuthenticated} />}
+            >
+              <Route path='/contact' element={<Contact />} />
             </Route>
           </Routes>
         </div>
